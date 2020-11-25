@@ -47,15 +47,40 @@ function main(params) {
       // in case of errors during the call resolve with an error message according to the pattern 
       // found in the catch clause below
 
-      resolve({
-        statusCode: 200,
-        body: {
-          text: params.text, 
-          language: "<Best Language>",
-          confidence: 0.5,
-        },
-        headers: { 'Content-Type': 'application/json' }
+      const LanguageTranslatorV3 = require('ibm-watson/language-translator/v3');
+      const { IamAuthenticator } = require('ibm-watson/auth');
+
+      const languageTranslator = new LanguageTranslatorV3({
+        version: '2018-05-01',
+        authenticator: new IamAuthenticator({
+          apikey: 'GiTvLRkhth8lAWupeWYGU9xkj00mbOoA1rdskzMG9U9V',
+        }),
+        serviceUrl: 'https://api.eu-de.language-translator.watson.cloud.ibm.com/instances/84e5d643-75f0-44c6-b229-2f93eb640d3c',
       });
+
+      const identifyParams = {
+        text: 'Language translator translates text from one language to another'
+      };
+
+      languageTranslator.identify(identifyParams)
+          .then(identifiedLanguages => {
+            console.log(JSON.stringify(identifiedLanguages, null, 2));
+            resolve({
+              statusCode: 200,
+              body: {
+                text: params.text,
+                language: identifiedLanguages[0].language,
+                confidence: identifiedLanguages[0].confidence,
+              },
+              headers: { 'Content-Type': 'application/json' }
+            });
+          })
+          .catch(err => {
+            console.log('error:', err);
+            resolve(getTheErrorResponse('Error while detecting language of the request', defaultLanguage));
+          });
+
+
 
 
     } catch (err) {
