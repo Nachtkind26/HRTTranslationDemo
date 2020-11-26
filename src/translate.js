@@ -49,15 +49,42 @@ function main(params) {
       // found in the catch clause below
 
       // pick the language with the highest confidence, and send it back
-      resolve({
-        statusCode: 200,
-        body: {
-          translations: "<translated text>",
-          words: 1,
-          characters: 11,
-        },
-        headers: { 'Content-Type': 'application/json' }
+
+      const LanguageTranslatorV3 = require('ibm-watson/language-translator/v3');
+      const { IamAuthenticator } = require('ibm-watson/auth');
+
+      const languageTranslator = new LanguageTranslatorV3({
+        version: '2018-05-01',
+        authenticator: new IamAuthenticator({
+          apikey: 'GiTvLRkhth8lAWupeWYGU9xkj00mbOoA1rdskzMG9U9V',
+        }),
+        serviceUrl: 'https://api.eu-de.language-translator.watson.cloud.ibm.com/instances/84e5d643-75f0-44c6-b229-2f93eb640d3c',
       });
+
+      const translateParams = {
+        text: 'Hello, how are you today?',
+        modelId: 'en-es',
+      };
+
+      languageTranslator.translate(translateParams)
+          .then(translationResult => {
+            console.log(JSON.stringify(translationResult, null, 2));
+            resolve({
+              statusCode: 200,
+              body: {
+                translations: translationResult.translations,
+                words: translationResult.word_count,
+                characters:translationResult.character_count,
+              },
+              headers: { 'Content-Type': 'application/json' }
+            });
+          })
+          .catch(err => {
+            console.log('error:', err);
+            resolve(getTheErrorResponse('Error while translate with the language service', defaultLanguage));
+          });
+
+
          
     } catch (err) {
       console.error('Error while initializing the AI service', err);
