@@ -105,7 +105,7 @@ function main(params) {
             })
             .catch(err => {
               console.log('error:', err);
-              resolve(getTheErrorResponse('Error while translate with the language service', defaultLanguage));
+              resolve(getTheErrorResponse(err.result.message, defaultLanguage));
             });
       }
 
