@@ -97,8 +97,8 @@ function main(params) {
                 statusCode: 200,
                 body: {
                   translations: translationResult.result.translations[0].translation,
-                  words: translationResult.result.translations[0].word_count,
-                  characters: translationResult.result.translations[0].character_count,
+                  words: translationResult.result.word_count,
+                  characters: translationResult.result.character_count,
                 },
                 headers: {'Content-Type': 'application/json'}
               });
