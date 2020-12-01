@@ -25,9 +25,7 @@ const languageTranslator = new LanguageTranslatorV3({
   serviceUrl: 'https://api.eu-de.language-translator.watson.cloud.ibm.com/instances/84e5d643-75f0-44c6-b229-2f93eb640d3c',
 });
 
-const identifyParams = {
-  text: 'Das ist ein test'
-};
+
 
 
 /**
@@ -49,7 +47,9 @@ function main(params) {
   return new Promise(function (resolve, reject) {
 
     try {
-
+      const identifyParams = {
+        text: params.text
+      };
       // *******TODO**********
       // - Call the language identification API of the translation service
       // see: https://cloud.ibm.com/apidocs/language-translator?code=node#identify-language
@@ -75,7 +75,7 @@ function main(params) {
           })
           .catch(err => {
             console.log('error:', err);
-            resolve(getTheErrorResponse('Error while detecting language of the request', defaultLanguage));
+            resolve(getTheErrorResponse(err.result.message, defaultLanguage));
           });
 
 
